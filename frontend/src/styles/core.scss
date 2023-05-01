@@ -1,0 +1,149 @@
+@import "~bootstrap/scss/bootstrap";
+@import "functions";
+@import "variables";
+@import "mixins";
+
+@font-face {
+  font-family: "Roboto-Bold";
+  src: url("./fonts/Roboto-Bold.woff2") format("truetype");
+}
+
+@font-face {
+  font-family: "Roboto-Regular";
+  src: url("./fonts/Roboto-Regular.woff2") format("truetype");
+}
+
+@font-face {
+  font-family: "Roboto-Medium";
+  src: url("./fonts/Roboto-Medium.woff2") format("truetype");
+}
+
+* {
+  font-family: "Roboto-Regular";
+}
+
+input {
+  border-width: size(1);
+  border-style: solid;
+  border-radius: size(10);
+  border-color: $dove-gray;
+  margin: size(0) size(16);
+  margin-top: 0;
+  width: 100%;
+  width: -moz-available;
+  width: -webkit-fill-available;
+  line-height: size(36);
+  padding-left: size(16);
+}
+
+// label {
+//   margin: size(16) size(16) size(8);
+//   font-size: size(14);
+// }
+
+textarea {
+  // box-sizing: content-box;
+  width: 100%;
+  border-width: size(1);
+  border-style: solid;
+  border-radius: size(10);
+  border-color: $dove-gray;
+  margin: size(16);
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+
+  &.warning {
+    border-color: $warning-red;
+    background-color: $background-warning-red;
+  }
+}
+
+h3 {
+  font-size: size(18);
+  font-weight: bold;
+}
+
+::selection {
+  background-color: $primary-arp;
+  color: #fff;
+}
+
+.pr-30 {
+  padding-right: size(30);
+}
+
+.mini_warning_text {
+  color: $warning-red;
+  font-size: size(10);
+  padding: size(0) size(24);
+  min-height: size(16);
+}
+
+.warning {
+  border-width: size(1);
+  border-style: solid;
+  border-radius: size(10);
+  border-color: $warning-red;
+}
+
+.gray_background {
+  background-color: $background-gray;
+}
+
+.justifier {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttonBox {
+  height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-family: "Roboto-Medium";
+
+  // @include media-breakpoint-up(md) {
+  //   margin-left: size(48);
+  //   justify-content: flex-end;
+  // }
+
+  .blueBtn {
+    font-family: "Roboto-Medium";
+    font-size: size(16);
+    color: $primary-arp;
+    border: none;
+
+    &.outline {
+      @include media-breakpoint-up(md) {
+        padding: size(12);
+      }
+
+      border: solid size(2) $primary-arp;
+    }
+
+    &.hoverer {
+      width: 100%;
+      padding: size(8) size(15);
+
+      &:active,
+      &:hover {
+        background-color: $button-light-blue;
+      }
+    }
+
+    &:active,
+    &:hover {
+      background-color: none;
+      background: none;
+      color: $primary-arp;
+    }
+  }
+}
+
+.height_transition {
+  transition: max-height 1s ease-in;
+  transition: height 1s ease-in;
+  max-height: size(99999);
+}

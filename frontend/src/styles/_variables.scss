@@ -1,0 +1,105 @@
+/**
+ * COLORS
+ */
+$black: #000 !default;
+$white: #fff !default;
+$dove-gray: #626262 !default;
+$background-gray: #f4f4f4 !default;
+$primary-arp: #049fe0 !default;
+$primary-arp-hover: #3cc5ff !default;
+$primary-arp-active: #0880b2 !default;
+$warning-red: #e10613 !default;
+$input-disabled: #dadada !default;
+$background-warning-red: #e1061310 !default;
+
+$bright-blue: #3cc5ff !default;
+$dark-blue: #023493 !default;
+$mid-blue: #004ad5 !default;
+$faded-mid-blue: #004ad514 !default;
+$button-blue: #0058ff !default;
+$light-blue: #e9effc !default;
+$button-light-blue: #f2f6fd !default;
+$main-grey: #f5f8fe !default;
+$font-gray: #595959 !default;
+$font-green: #009430 !default;
+$font-red: #f40000 !default;
+
+$transition: 0.4s !default;
+$outline-gray: #acbcc8 !default;
+$dark-grey: #3a3a3a !default;
+
+$theme-colors: (
+  "black": $black,
+  "white": $white,
+) !default;
+
+$colors: map-merge((), $theme-colors) !default;
+
+/**
+ * GRID
+ */
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1200px,
+  // inner content will be 1170px wide
+) !default;
+
+/**
+ * FONT FAMILIES
+ */
+$font-family-primary: "Klavika", sans-serif;
+$font-family-secondary: "Arial", sans-serif;
+$font-family-sans-serif: $font-family-primary !default;
+$font-family-base: $font-family-sans-serif !default;
+$headings-font-family: $font-family-secondary !default;
+$input-btn-font-family: $font-family-primary;
+
+/**
+ * FONT SIZES
+ */
+$font-size-base: 1rem !default; // Assumes the browser default, typically `16px`
+$h1-font-size: $font-size-base * 3.75 !default;
+$h2-font-size: $font-size-base * 3 !default;
+$h3-font-size: $font-size-base * 2.125 !default;
+$h4-font-size: $font-size-base * 1.75 !default;
+$h5-font-size: $font-size-base * 1.5 !default;
+$h6-font-size: $font-size-base * 1.25 !default;
+
+/**
+ * FONT WEIGHTS
+ */
+$font-weight-medium: 500;
+$font-weight-high: 1000;
+$btn-font-weight: $font-weight-medium !default;
+
+/**
+ * MISC
+ */
+
+$border-radius-lg: size(10);
+
+/**
+ * BUTTONS
+ */
+$input-btn-padding-y: 0.5625rem !default;
+
+/**
+ * CARDS
+ */
+$card-spacer-x: size(20);
+$card-spacer-y: size(25);
+$card-border-radius: size(10);
+$card-border-width: 0;
+$card-bg: $white;
+
+/**
+ * PROGRESS BAR
+ */
+$progress-height: size(8);
+$progress-bg: $white;
+$progress-border-radius: size(200);
+$progress-bar-bg: $black;
+
+@import "~bootstrap/scss/variables";

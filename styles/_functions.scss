@@ -1,0 +1,5 @@
+@function size($pixelSize) {
+  @return calc($pixelSize * 1rem / 16);
+}
+
+@import "~bootstrap/scss/functions";
