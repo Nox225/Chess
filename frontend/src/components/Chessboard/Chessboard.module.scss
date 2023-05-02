@@ -1,26 +1,16 @@
 @import "/src/styles/core.scss";
 
 .chessboardGrid{
-    width: 800px;
-    height: 800px;
-    background-color: green;
+    width: 812px;
+    height: 812px;
+    place-content: center;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    background-color: rgb(55, 9, 74);
     display: grid;
     grid-template-columns: repeat(8, 100px);
     grid-template-rows: repeat(8, 100px);
-}
-
-.tile{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    height: 100px;
-}
-
-.dark{
-    background-color: rgb(230, 106, 61);
-}
-
-.light{
-    background-color: rgb(250, 213, 199);
+    border-radius: 12px;
+    // padding: 10px;
 }
