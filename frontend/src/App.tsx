@@ -4,7 +4,7 @@ import Chessboard from "./components/Chessboard/Chessboard";
 
 const App = () => {
   return (
-    <div style={{display: 'flex', placeContent: 'center', overflowY: 'hidden', height: '100vh', backgroundColor: 'rgba(26, 9, 19, 1)'}}>
+    <div style={{placeContent: 'center', overflowY: 'hidden', height: '100vh', backgroundColor: 'rgba(26, 9, 19, 1)'}}>
       <Chessboard />
     </div>
   );

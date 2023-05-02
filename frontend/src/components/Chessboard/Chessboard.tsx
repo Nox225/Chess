@@ -2,6 +2,7 @@ import React from 'react'
 import styles from './Chessboard.module.scss'
 import Tile from '../Tile/Tile'
 import makeid from '../../helpers/makeid'
+import initialBoardSetup from '../../helpers/initialBoardSetup'
 
 interface Piece {
   image: string;
@@ -16,33 +17,42 @@ const Chessboard = () => {
   let board = [];
 
   const pieces: Piece[] = [];
+  initialBoardSetup(pieces);
 
-  for(let i=0; i<axisX.length; i++){
-    pieces.push({image: 'pieces/w-p.png', x: i, y: 6})
-    pieces.push({image: 'pieces/b-p.png', x: i, y: 1})
+  let activePiece: HTMLElement | null = null;
+
+  const grabPiece = (e: React.MouseEvent) => {
+    const element = e.target as HTMLElement;
+
+    if(element.classList.value.includes('piece')){
+      // console.log('piece');
+      const x = e.clientX - 50;
+      const y = e.clientY - 50;
+  
+      element.style.position = 'absolute';
+      element.style.left = `${x}px`;
+      element.style.top = `${y}px`;
+
+      activePiece = element;
+    }
   }
 
-  pieces.push({image: 'pieces/b-r.png', x: 0, y: 0})
-  pieces.push({image: 'pieces/b-r.png', x: 7, y: 0})
-  pieces.push({image: 'pieces/w-r.png', x: 0, y: 7})
-  pieces.push({image: 'pieces/w-r.png', x: 7, y: 7})
+  const movePiece = (e: React.MouseEvent) => {    
+    if(!!activePiece){      
+      const x = e.clientX - 50;
+      const y = e.clientY - 50;
   
-  pieces.push({image: 'pieces/b-n.png', x: 1, y: 0})
-  pieces.push({image: 'pieces/b-n.png', x: 6, y: 0})
-  pieces.push({image: 'pieces/w-n.png', x: 1, y: 7})
-  pieces.push({image: 'pieces/w-n.png', x: 6, y: 7})
+      activePiece.style.position = 'absolute';
+      activePiece.style.left = `${x}px`;
+      activePiece.style.top = `${y}px`;
+    }
+  }
 
-  pieces.push({image: 'pieces/b-b.png', x: 2, y: 0})
-  pieces.push({image: 'pieces/b-b.png', x: 5, y: 0})
-  pieces.push({image: 'pieces/w-b.png', x: 2, y: 7})
-  pieces.push({image: 'pieces/w-b.png', x: 5, y: 7})
-
-  pieces.push({image: 'pieces/b-q.png', x: 3, y: 0})
-  pieces.push({image: 'pieces/b-k.png', x: 4, y: 0})
-  pieces.push({image: 'pieces/w-q.png', x: 3, y: 7})
-  pieces.push({image: 'pieces/w-k.png', x: 4, y: 7})
-  
-
+  const dropPiece = (e: React.MouseEvent) => {
+    if(!!activePiece){
+      activePiece = null;
+    }
+  }
 
   for(let i=0; i<axisY.length; i++){
     for(let j=0; j<axisX.length; j++){
@@ -54,13 +64,18 @@ const Chessboard = () => {
           image = piece.image;
         }
       })
-      // board.push(<span className={`${styles.tile} ${(i+j)%2 === 0 ? styles.light : styles.dark}`}>{axisX[j]}{axisY[i]}</span>)
       board.push(<Tile key={makeid(7)} image={image} number={number} />);
     }
   }
   return (
-    // <div className={styles.chessboardGrid}>{board}</div>
-    <div className={styles.chessboardGrid}>{board}</div>
+    <div 
+      onMouseDown={(e)=>grabPiece(e)}
+      onMouseMove={(e)=>movePiece(e)}
+      onMouseUp={(e)=>dropPiece(e)}
+      className={styles.chessboardGrid}
+    >
+      {board}
+    </div>
   )
 }
 
