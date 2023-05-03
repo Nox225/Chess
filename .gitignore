@@ -1,0 +1,7 @@
+venv/
+*.pyc
+*.cfg
+
+bin/
+lib/
+lib64/
