@@ -40,27 +40,28 @@ initialBoardSetup.push({image: 'pieces/w-k.png', x: 4, y: 0})
 
 const Chessboard = () => {
   const [pieces, setPieces] = useState<Piece[]>(initialBoardSetup);
-  const [activePiece, setActivePiece] = useState<HTMLElement | null>(null);
-  const [pieceX, setPieceX] = useState<number>(0);
-  const [pieceY, setPieceY] = useState<number>(0);
+  // const [activePiece, setActivePiece] = useState<HTMLElement | null>(null);
+  // const [pieceX, setPieceX] = useState<number>(0);
+  // const [pieceY, setPieceY] = useState<number>(0);
 
   const chessboardRef = useRef<HTMLDivElement>(null);
+  let initialPos = useRef<number[]>([]);
 
   let board = [];
 
   const verticalAxis = ['1', '2', '3', '4', '5', '6', '7', '8'];
   const horizontalAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-  // let activePiece: HTMLElement | null = null;
+  let activePiece: HTMLElement | null = null;
   
   const grabPiece = (e: React.MouseEvent) => {
     const element = e.target as HTMLElement;
-
+    
     const chessboard = chessboardRef.current;
     if(element.classList.value.includes('piece') && !!chessboard){
-      setPieceX(Math.floor((e.clientX - chessboard.offsetLeft) / 100))
-      setPieceY(Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100)));
-
+      // setPieceX(Math.floor((e.clientX - chessboard.offsetLeft) / 100))
+      // setPieceY(Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100)));
+      initialPos.current = [Math.floor((e.clientX - chessboard.offsetLeft) / 100), Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100))];
       const x = e.clientX - 50;
       const y = e.clientY - 50;
   
@@ -68,15 +69,17 @@ const Chessboard = () => {
       element.style.left = `${x}px`;
       element.style.top = `${y}px`;
 
-      setActivePiece(element);
-      // activePiece = element;
+      // setActivePiece(element);
+      activePiece = element;
     }
   }  
 
   const movePiece = (e: React.MouseEvent) => {
     const chessboard = chessboardRef.current; 
-
-    if(!!activePiece && !!chessboard){      
+    
+    if(!!activePiece && !!chessboard){ 
+      console.log(activePiece);
+           
       const minX = chessboard.offsetLeft-20;
       const minY = chessboard.offsetTop-20;
       const maxX = chessboard.offsetLeft + chessboard.clientWidth-80;
@@ -97,11 +100,10 @@ const Chessboard = () => {
     if(!!activePiece && !!chessboard){
       const x = Math.floor((e.clientX - chessboard.offsetLeft) / 100);
       const y = Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100));
-      console.log(x, y);
 
       setPieces(value => {
         const pieces = value.map((p) => {
-          if(p.x===pieceX && p.y===pieceY){
+          if(p.x===initialPos.current[0] && p.y===initialPos.current[1]){
             p.x=x;
             p.y=y;
           }
@@ -110,7 +112,7 @@ const Chessboard = () => {
         return pieces;
       })
 
-      setActivePiece(null);
+      // setActivePiece(null);
       // activePiece = null;
     }
   }
