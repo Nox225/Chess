@@ -4,7 +4,7 @@ import Tile from '../Tile/Tile'
 import makeid from '../../helpers/makeid'
 import Referee from '../../referee/Referee'
 
-interface Piece {
+export interface Piece {
   image: string;
   x: number;
   y: number;
@@ -118,7 +118,7 @@ const Chessboard = () => {
       setPieces(value => {
         const pieces = value.map((p) => {
           if(p.x===initialPos.current[0] && p.y===initialPos.current[1]){
-            if(referee.isValidMove(px, py, x, y, p.type, p.team)){
+            if(referee.isValidMove(px, py, x, y, p.type, p.team, value)){
               p.x=x;
               p.y=y;
             } else{
