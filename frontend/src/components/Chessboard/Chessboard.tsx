@@ -2,50 +2,65 @@ import React, { useRef, useState } from 'react'
 import styles from './Chessboard.module.scss'
 import Tile from '../Tile/Tile'
 import makeid from '../../helpers/makeid'
-// import initialBoardSetup from '../../helpers/initialBoardSetup'
+import Referee from '../../referee/Referee'
 
 interface Piece {
   image: string;
   x: number;
   y: number;
+  type: PieceType;
+  team: Team;
+}
+
+export enum PieceType {
+  PAWN,
+  BISHOP,
+  KNIGHT,
+  ROOK,
+  QUEEN,
+  KING
+}
+
+export enum Team {
+  OPPONENT,
+  OUR
 }
 
 const initialBoardSetup: Piece[] = [];
 
 for(let i=0; i<8; i++){
-  initialBoardSetup.push({image: 'pieces/w-p.png', x: i, y: 1})
-  initialBoardSetup.push({image: 'pieces/b-p.png', x: i, y: 6})
+  initialBoardSetup.push({image: 'pieces/w-p.png', x: i, y: 1, type: PieceType.PAWN, team: Team.OUR})
+  initialBoardSetup.push({image: 'pieces/b-p.png', x: i, y: 6, type: PieceType.PAWN, team: Team.OPPONENT})
 }
 
-initialBoardSetup.push({image: 'pieces/b-r.png', x: 0, y: 7})
-initialBoardSetup.push({image: 'pieces/b-r.png', x: 7, y: 7})
-initialBoardSetup.push({image: 'pieces/w-r.png', x: 0, y: 0})
-initialBoardSetup.push({image: 'pieces/w-r.png', x: 7, y: 0})
+initialBoardSetup.push({image: 'pieces/b-r.png', x: 0, y: 7, type: PieceType.ROOK, team: Team.OPPONENT})
+initialBoardSetup.push({image: 'pieces/b-r.png', x: 7, y: 7, type: PieceType.ROOK, team: Team.OPPONENT})
+initialBoardSetup.push({image: 'pieces/w-r.png', x: 0, y: 0, type: PieceType.ROOK, team: Team.OUR})
+initialBoardSetup.push({image: 'pieces/w-r.png', x: 7, y: 0, type: PieceType.ROOK, team: Team.OUR})
 
-initialBoardSetup.push({image: 'pieces/b-n.png', x: 1, y: 7})
-initialBoardSetup.push({image: 'pieces/b-n.png', x: 6, y: 7})
-initialBoardSetup.push({image: 'pieces/w-n.png', x: 1, y: 0})
-initialBoardSetup.push({image: 'pieces/w-n.png', x: 6, y: 0})
+initialBoardSetup.push({image: 'pieces/b-n.png', x: 1, y: 7, type: PieceType.KNIGHT, team: Team.OPPONENT})
+initialBoardSetup.push({image: 'pieces/b-n.png', x: 6, y: 7, type: PieceType.KNIGHT, team: Team.OPPONENT})
+initialBoardSetup.push({image: 'pieces/w-n.png', x: 1, y: 0, type: PieceType.KNIGHT, team: Team.OUR})
+initialBoardSetup.push({image: 'pieces/w-n.png', x: 6, y: 0, type: PieceType.KNIGHT, team: Team.OUR})
 
-initialBoardSetup.push({image: 'pieces/b-b.png', x: 2, y: 7})
-initialBoardSetup.push({image: 'pieces/b-b.png', x: 5, y: 7})
-initialBoardSetup.push({image: 'pieces/w-b.png', x: 2, y: 0})
-initialBoardSetup.push({image: 'pieces/w-b.png', x: 5, y: 0})
+initialBoardSetup.push({image: 'pieces/b-b.png', x: 2, y: 7, type: PieceType.BISHOP, team: Team.OPPONENT})
+initialBoardSetup.push({image: 'pieces/b-b.png', x: 5, y: 7, type: PieceType.BISHOP, team: Team.OPPONENT})
+initialBoardSetup.push({image: 'pieces/w-b.png', x: 2, y: 0, type: PieceType.BISHOP, team: Team.OUR})
+initialBoardSetup.push({image: 'pieces/w-b.png', x: 5, y: 0, type: PieceType.BISHOP, team: Team.OUR})
 
-initialBoardSetup.push({image: 'pieces/b-q.png', x: 3, y: 7})
-initialBoardSetup.push({image: 'pieces/b-k.png', x: 4, y: 7})
-initialBoardSetup.push({image: 'pieces/w-q.png', x: 3, y: 0})
-initialBoardSetup.push({image: 'pieces/w-k.png', x: 4, y: 0})
+initialBoardSetup.push({image: 'pieces/b-q.png', x: 3, y: 7, type: PieceType.QUEEN, team: Team.OPPONENT})
+initialBoardSetup.push({image: 'pieces/b-k.png', x: 4, y: 7, type: PieceType.KING, team: Team.OPPONENT})
+initialBoardSetup.push({image: 'pieces/w-q.png', x: 3, y: 0, type: PieceType.QUEEN, team: Team.OUR})
+initialBoardSetup.push({image: 'pieces/w-k.png', x: 4, y: 0, type: PieceType.KING, team: Team.OUR})
 
 
 const Chessboard = () => {
   const [pieces, setPieces] = useState<Piece[]>(initialBoardSetup);
-  // const [activePiece, setActivePiece] = useState<HTMLElement | null>(null);
-  // const [pieceX, setPieceX] = useState<number>(0);
-  // const [pieceY, setPieceY] = useState<number>(0);
 
   const chessboardRef = useRef<HTMLDivElement>(null);
   let initialPos = useRef<number[]>([]);
+
+  const referee = new Referee();
 
   let board = [];
 
@@ -59,9 +74,10 @@ const Chessboard = () => {
     
     const chessboard = chessboardRef.current;
     if(element.classList.value.includes('piece') && !!chessboard){
-      // setPieceX(Math.floor((e.clientX - chessboard.offsetLeft) / 100))
-      // setPieceY(Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100)));
-      initialPos.current = [Math.floor((e.clientX - chessboard.offsetLeft) / 100), Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100))];
+      initialPos.current = [
+        Math.floor((e.clientX - chessboard.offsetLeft) / 100), 
+        Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100))
+      ];
       const x = e.clientX - 50;
       const y = e.clientY - 50;
   
@@ -69,7 +85,6 @@ const Chessboard = () => {
       element.style.left = `${x}px`;
       element.style.top = `${y}px`;
 
-      // setActivePiece(element);
       activePiece = element;
     }
   }  
@@ -77,9 +92,7 @@ const Chessboard = () => {
   const movePiece = (e: React.MouseEvent) => {
     const chessboard = chessboardRef.current; 
     
-    if(!!activePiece && !!chessboard){ 
-      console.log(activePiece);
-           
+    if(!!activePiece && !!chessboard){            
       const minX = chessboard.offsetLeft-20;
       const minY = chessboard.offsetTop-20;
       const maxX = chessboard.offsetLeft + chessboard.clientWidth-80;
@@ -96,6 +109,7 @@ const Chessboard = () => {
 
   const dropPiece = (e: React.MouseEvent) => {
     const chessboard = chessboardRef.current;
+    const [px, py] = initialPos.current
     
     if(!!activePiece && !!chessboard){
       const x = Math.floor((e.clientX - chessboard.offsetLeft) / 100);
@@ -104,16 +118,22 @@ const Chessboard = () => {
       setPieces(value => {
         const pieces = value.map((p) => {
           if(p.x===initialPos.current[0] && p.y===initialPos.current[1]){
-            p.x=x;
-            p.y=y;
+            if(referee.isValidMove(px, py, x, y, p.type, p.team)){
+              p.x=x;
+              p.y=y;
+            } else{
+              if(!!activePiece){
+                activePiece.style.position = 'relative';
+                activePiece.style.removeProperty('top');
+                activePiece.style.removeProperty('left');
+              }
+            }
           }
-          return p;
+            return p;
+          })
+          return pieces;
         })
-        return pieces;
-      })
-
-      // setActivePiece(null);
-      // activePiece = null;
+      activePiece = null;
     }
   }
 
