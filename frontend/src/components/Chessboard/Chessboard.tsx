@@ -10,6 +10,7 @@ export interface Piece {
   y: number;
   type: PieceType;
   team: Team;
+  enPassant?: boolean;
 }
 
 export enum PieceType {
@@ -80,10 +81,11 @@ const Chessboard = () => {
       ];
       const x = e.clientX - 50;
       const y = e.clientY - 50;
-  
+      
       element.style.position = 'absolute';
       element.style.left = `${x}px`;
       element.style.top = `${y}px`;
+      element.style.zIndex = '10';
 
       activePiece = element;
     }
@@ -109,7 +111,7 @@ const Chessboard = () => {
 
   const dropPiece = (e: React.MouseEvent) => {
     const chessboard = chessboardRef.current;
-    const [px, py] = initialPos.current
+    const [px, py] = initialPos.current;
     
     if(!!activePiece && !!chessboard){
       const x = Math.floor((e.clientX - chessboard.offsetLeft) / 100);
@@ -120,48 +122,57 @@ const Chessboard = () => {
       
       if(!!currentPiece){
         const isValidMove = referee.isValidMove(px, py, x, y, currentPiece.type, currentPiece.team, pieces);
+        const isEnPassantMove = referee.isEnPassantMove(px, py, x, y, currentPiece.type, currentPiece.team, pieces);
 
-        if(isValidMove){
+        const direction = (currentPiece.team === Team.OUR) ? 1 : -1;
+
+        if(isEnPassantMove){
           const updatedPieces = pieces.reduce((results, piece) => {
-            if(piece.x === currentPiece.x && piece.y === currentPiece.y){
+            if(piece.x === px && piece.y === py){
+              piece.enPassant = false;
+              piece.x = x;
+              piece.y = y;
+              results.push(piece);
+            }else if(!(piece.x === x && piece.y === y - direction)){
+              if(piece.type === PieceType.PAWN){
+                piece.enPassant = false;
+              }
+              results.push(piece);
+            }
+            return results;
+          }, [] as Piece[]);
+
+          setPieces(updatedPieces);
+
+        }else if(isValidMove){
+          const updatedPieces = pieces.reduce((results, piece) => {
+            if(piece.x === px && piece.y === py){
+              if(Math.abs(py-y) === 2 && piece.type === PieceType.PAWN){
+                piece.enPassant = true;
+              }else{
+                piece.enPassant = false;
+              }
               piece.x = x;
               piece.y = y;
               results.push(piece);
             } else if(!(piece.x === x && piece.y === y)){
-              results.push(piece);
+                if(piece.type === PieceType.PAWN){
+                  piece.enPassant = false;
+                }
+                results.push(piece);
             }
             return results;
-          }, [] as Piece[])
+          }, [] as Piece[]);
   
             setPieces(updatedPieces);
-            
-        }else{
-          console.log('reset');
-          
+
+        }else{          
           activePiece.style.position = 'relative';
           activePiece.style.removeProperty('top');
           activePiece.style.removeProperty('left');
         }
       }
-
-      // setPieces(value => {
-      //   const pieces = value.map((p) => {
-      //     if(p.x===initialPos.current[0] && p.y===initialPos.current[1]){
-      //       if(referee.isValidMove(px, py, x, y, p.type, p.team, value)){
-      //         p.x=x;
-      //         p.y=y;
-      //       } else{
-      //         if(!!activePiece){
-      //           activePiece.style.position = 'relative';
-      //           activePiece.style.removeProperty('top');
-      //           activePiece.style.removeProperty('left');
-      //         }
-      //       }
-      //     }
-      //       return p;
-      //     })
-      //     return pieces;
-      //   })
+      activePiece.style.removeProperty('zIndex');
       activePiece = null;
     }
   }

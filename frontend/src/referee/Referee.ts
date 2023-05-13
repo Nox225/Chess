@@ -1,13 +1,39 @@
 import { PieceType, Team, Piece } from "../components/Chessboard/Chessboard";
 
 export default class Referee {
-    tileIsOccupied(x: number, y: number, boardState: Piece[]){        
+    tileIsOccupied(x: number, y: number, boardState: Piece[]): boolean{        
         return boardState.some((piece) => piece.x === x && piece.y === y);
     }
 
     tileIsOccupiedByOpponent(x: number, y: number, boardState: Piece[], team: Team): boolean{
-        const piece = boardState.find((piece) => piece.x === x && piece.y === y && piece.team !== team);        
+        const piece = boardState.find((piece) => 
+            piece.x === x && piece.y === y && piece.team !== team
+        );        
         return !!piece;
+    }
+
+    isEnPassantMove(
+        px: number, 
+        py: number, 
+        x: number, 
+        y: number, 
+        type: PieceType, 
+        team: Team,
+        boardState: Piece[]
+    ): boolean{
+        const direction = (team === Team.OUR) ? 1 : -1;
+
+        if(type === PieceType.PAWN){
+            if((x - px === -1 || x - px === 1) && y - py === direction){
+                const piece = boardState.find((p) => 
+                    p.x === x && p.y === y - direction && !!p.enPassant
+                );
+                if(!!piece){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     isValidMove(
@@ -38,17 +64,13 @@ export default class Referee {
                 }  
             else if(x - px === -1 && y - py === direction){
                 if(this.tileIsOccupiedByOpponent(x, y, boardState, team)){
-                    console.log('can capture');
                     return true;
                 }
-                console.log('upper/bottom left');
             }
             else if(x - px === 1 && y - py === direction){
                 if(this.tileIsOccupiedByOpponent(x, y, boardState, team)){
-                    console.log('can capture');
                     return true;
                 }
-                console.log('upper/bottom right');
             }
         }
     }
