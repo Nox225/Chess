@@ -115,24 +115,53 @@ const Chessboard = () => {
       const x = Math.floor((e.clientX - chessboard.offsetLeft) / 100);
       const y = Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100));
 
-      setPieces(value => {
-        const pieces = value.map((p) => {
-          if(p.x===initialPos.current[0] && p.y===initialPos.current[1]){
-            if(referee.isValidMove(px, py, x, y, p.type, p.team, value)){
-              p.x=x;
-              p.y=y;
-            } else{
-              if(!!activePiece){
-                activePiece.style.position = 'relative';
-                activePiece.style.removeProperty('top');
-                activePiece.style.removeProperty('left');
-              }
+      const currentPiece = pieces.find((p) => p.x === px && p.y === py);
+      // const attackedPiece = pieces.find((p) => p.x === x && p.y === y);
+      
+      if(!!currentPiece){
+        const isValidMove = referee.isValidMove(px, py, x, y, currentPiece.type, currentPiece.team, pieces);
+
+        if(isValidMove){
+          const updatedPieces = pieces.reduce((results, piece) => {
+            if(piece.x === currentPiece.x && piece.y === currentPiece.y){
+              piece.x = x;
+              piece.y = y;
+              results.push(piece);
+            } else if(!(piece.x === x && piece.y === y)){
+              results.push(piece);
             }
-          }
-            return p;
-          })
-          return pieces;
-        })
+            return results;
+          }, [] as Piece[])
+  
+            setPieces(updatedPieces);
+            
+        }else{
+          console.log('reset');
+          
+          activePiece.style.position = 'relative';
+          activePiece.style.removeProperty('top');
+          activePiece.style.removeProperty('left');
+        }
+      }
+
+      // setPieces(value => {
+      //   const pieces = value.map((p) => {
+      //     if(p.x===initialPos.current[0] && p.y===initialPos.current[1]){
+      //       if(referee.isValidMove(px, py, x, y, p.type, p.team, value)){
+      //         p.x=x;
+      //         p.y=y;
+      //       } else{
+      //         if(!!activePiece){
+      //           activePiece.style.position = 'relative';
+      //           activePiece.style.removeProperty('top');
+      //           activePiece.style.removeProperty('left');
+      //         }
+      //       }
+      //     }
+      //       return p;
+      //     })
+      //     return pieces;
+      //   })
       activePiece = null;
     }
   }
