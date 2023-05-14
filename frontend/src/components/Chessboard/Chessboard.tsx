@@ -27,6 +27,8 @@ export enum Team {
   OUR
 }
 
+const GRIDSIZE = 100;
+
 const initialBoardSetup: Piece[] = [];
 
 for(let i=0; i<8; i++){
@@ -54,33 +56,30 @@ initialBoardSetup.push({image: 'pieces/b-k.png', x: 4, y: 7, type: PieceType.KIN
 initialBoardSetup.push({image: 'pieces/w-q.png', x: 3, y: 0, type: PieceType.QUEEN, team: Team.OUR})
 initialBoardSetup.push({image: 'pieces/w-k.png', x: 4, y: 0, type: PieceType.KING, team: Team.OUR})
 
-
 const Chessboard = () => {
   const [pieces, setPieces] = useState<Piece[]>(initialBoardSetup);
 
   const chessboardRef = useRef<HTMLDivElement>(null);
   let initialPos = useRef<number[]>([]);
-
-  const referee = new Referee();
-
   let board = [];
+  let activePiece: HTMLElement | null = null;
+  
+  const referee = new Referee();
 
   const verticalAxis = ['1', '2', '3', '4', '5', '6', '7', '8'];
   const horizontalAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-
-  let activePiece: HTMLElement | null = null;
   
   const grabPiece = (e: React.MouseEvent) => {
     const element = e.target as HTMLElement;
-    
     const chessboard = chessboardRef.current;
+
     if(element.classList.value.includes('piece') && !!chessboard){
       initialPos.current = [
-        Math.floor((e.clientX - chessboard.offsetLeft) / 100), 
-        Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100))
+        Math.floor((e.clientX - chessboard.offsetLeft) / GRIDSIZE), 
+        Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - GRIDSIZE*8) / GRIDSIZE))
       ];
-      const x = e.clientX - 50;
-      const y = e.clientY - 50;
+      const x = e.clientX - GRIDSIZE/2;
+      const y = e.clientY - GRIDSIZE/2;
       
       element.style.position = 'absolute';
       element.style.left = `${x}px`;
@@ -95,13 +94,13 @@ const Chessboard = () => {
     const chessboard = chessboardRef.current; 
     
     if(!!activePiece && !!chessboard){            
-      const minX = chessboard.offsetLeft-20;
-      const minY = chessboard.offsetTop-20;
-      const maxX = chessboard.offsetLeft + chessboard.clientWidth-80;
-      const maxY = chessboard.offsetTop + chessboard.clientHeight-80;
+      const minX = chessboard.offsetLeft-GRIDSIZE/5;
+      const minY = chessboard.offsetTop-GRIDSIZE/5;
+      const maxX = chessboard.offsetLeft + chessboard.clientWidth-(4*(GRIDSIZE/5));
+      const maxY = chessboard.offsetTop + chessboard.clientHeight-(4*(GRIDSIZE/5));
 
-      const x = e.clientX - 50;
-      const y = e.clientY - 50;      
+      const x = e.clientX - GRIDSIZE/2;
+      const y = e.clientY - GRIDSIZE/2;      
   
       activePiece.style.position = 'absolute';
       activePiece.style.left = x<minX ? `${minX}px` : x>maxX ? `${maxX}px` : `${x}px`;
@@ -114,16 +113,13 @@ const Chessboard = () => {
     const [px, py] = initialPos.current;
     
     if(!!activePiece && !!chessboard){
-      const x = Math.floor((e.clientX - chessboard.offsetLeft) / 100);
-      const y = Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100));
-
+      const x = Math.floor((e.clientX - chessboard.offsetLeft) / GRIDSIZE);
+      const y = Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 8*GRIDSIZE) / GRIDSIZE));
       const currentPiece = pieces.find((p) => p.x === px && p.y === py);
-      // const attackedPiece = pieces.find((p) => p.x === x && p.y === y);
       
       if(!!currentPiece){
         const isValidMove = referee.isValidMove(px, py, x, y, currentPiece.type, currentPiece.team, pieces);
         const isEnPassantMove = referee.isEnPassantMove(px, py, x, y, currentPiece.type, currentPiece.team, pieces);
-
         const direction = (currentPiece.team === Team.OUR) ? 1 : -1;
 
         if(isEnPassantMove){
@@ -147,11 +143,7 @@ const Chessboard = () => {
         }else if(isValidMove){
           const updatedPieces = pieces.reduce((results, piece) => {
             if(piece.x === px && piece.y === py){
-              if(Math.abs(py-y) === 2 && piece.type === PieceType.PAWN){
-                piece.enPassant = true;
-              }else{
-                piece.enPassant = false;
-              }
+              piece.enPassant = Math.abs(py-y) === 2 && piece.type === PieceType.PAWN;
               piece.x = x;
               piece.y = y;
               results.push(piece);

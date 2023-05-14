@@ -6,10 +6,7 @@ export default class Referee {
     }
 
     tileIsOccupiedByOpponent(x: number, y: number, boardState: Piece[], team: Team): boolean{
-        const piece = boardState.find((piece) => 
-            piece.x === x && piece.y === y && piece.team !== team
-        );        
-        return !!piece;
+        return !!boardState.find((piece) => piece.x === x && piece.y === y && piece.team !== team);
     }
 
     isEnPassantMove(
@@ -45,9 +42,6 @@ export default class Referee {
         team: Team,
         boardState: Piece[]
     ){
-        // console.log(px, py, x, y, type, team);
-        // console.log(x-px);
-
         if(type === PieceType.PAWN){
             const firstRow = (team === Team.OUR) ? 1 : 6;
             const direction = (team === Team.OUR) ? 1 : -1;
@@ -58,18 +52,34 @@ export default class Referee {
                  return true;
              }
             }else if(px === x && (y-py) === direction){
-                    if(!this.tileIsOccupied(x, y, boardState)){
-                        return true;
-                    }
+                    return !this.tileIsOccupied(x, y, boardState)
                 }  
             else if(x - px === -1 && y - py === direction){
-                if(this.tileIsOccupiedByOpponent(x, y, boardState, team)){
-                    return true;
-                }
+                return this.tileIsOccupiedByOpponent(x, y, boardState, team);
+            }else if(x - px === 1 && y - py === direction){
+                return this.tileIsOccupiedByOpponent(x, y, boardState, team);
             }
-            else if(x - px === 1 && y - py === direction){
-                if(this.tileIsOccupiedByOpponent(x, y, boardState, team)){
-                    return true;
+        }
+
+        else if(type === PieceType.KNIGHT){
+            for(let i=-1; i<2; i+=2){
+                for(let j=-1; j<2; j+=2){
+                    if(y - py === 2*i){
+                        if(x - px === j){
+                            if(!this.tileIsOccupied(x, y, boardState) ||
+                                this.tileIsOccupiedByOpponent(x, y, boardState, team)){
+                                    return true;
+                            }
+                        }
+                    }
+                    if(x - px === 2*i){
+                        if(y - py === -j){
+                            if(!this.tileIsOccupied(x, y, boardState) ||
+                                this.tileIsOccupiedByOpponent(x, y, boardState, team)){
+                                    return true;
+                            }
+                        }
+                    }
                 }
             }
         }
