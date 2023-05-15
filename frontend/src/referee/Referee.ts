@@ -3,10 +3,15 @@ import { PieceType, Team, Piece } from "../components/Chessboard/Chessboard";
 export default class Referee {
     tileIsOccupied(x: number, y: number, boardState: Piece[]): boolean{        
         return boardState.some((piece) => piece.x === x && piece.y === y);
+        // return !!boardState.find((p) => p.x === x && p.y === y);
     }
 
     tileIsOccupiedByOpponent(x: number, y: number, boardState: Piece[], team: Team): boolean{
         return !!boardState.find((piece) => piece.x === x && piece.y === y && piece.team !== team);
+    }
+    
+    tileIsOccupiedByPlayer(x: number, y: number, boardState: Piece[], team: Team): boolean{
+        return !!boardState.find((piece) => piece.x === x && piece.y === y && piece.team === team);
     }
 
     isEnPassantMove(
@@ -78,6 +83,63 @@ export default class Referee {
                                 this.tileIsOccupiedByOpponent(x, y, boardState, team)){
                                     return true;
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        else if(type === PieceType.BISHOP){            
+            for(let i = 1; i < 8; i++){
+                if(x > px && y > py){
+                    let passedPosition = {x: px+i, y: py+i}
+                    if(passedPosition.x === x && passedPosition.y === y){
+                        if(!this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState) ||
+                            this.tileIsOccupiedByOpponent(passedPosition.x, passedPosition.y, boardState, team)){
+                                return true;
+                        }
+                    } else{
+                        if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){                            
+                            break;
+                        }
+                    }
+                }
+                if(x > px && y < py){
+                    let passedPosition = {x: px+i, y: py-i}
+                    if(passedPosition.x === x && passedPosition.y === y){
+                        if(!this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState) ||
+                            this.tileIsOccupiedByOpponent(passedPosition.x, passedPosition.y, boardState, team)){
+                                return true;
+                        }
+                    } else{
+                        if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){                            
+                            break;
+                        }
+                    }
+                }
+                if(x < px && y < py){
+                    let passedPosition = {x: px-i, y: py-i}
+                    if(passedPosition.x === x && passedPosition.y === y){
+                        if(!this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState) ||
+                            this.tileIsOccupiedByOpponent(passedPosition.x, passedPosition.y, boardState, team)){
+                                return true;
+                        }
+                    } else{
+                        if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){                            
+                            break;
+                        }
+                    }
+                }
+                if(x < px && y > py){
+                    let passedPosition = {x: px-i, y: py+i}
+                    if(passedPosition.x === x && passedPosition.y === y){
+                        if(!this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState) ||
+                            this.tileIsOccupiedByOpponent(passedPosition.x, passedPosition.y, boardState, team)){
+                                return true;
+                        }
+                    } else{
+                        if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){                            
+                            break;
                         }
                     }
                 }
