@@ -3,7 +3,6 @@ import { PieceType, Team, Piece } from "../components/Chessboard/Chessboard";
 export default class Referee {
     tileIsOccupied(x: number, y: number, boardState: Piece[]): boolean{        
         return boardState.some((piece) => piece.x === x && piece.y === y);
-        // return !!boardState.find((p) => p.x === x && p.y === y);
     }
 
     tileIsOccupiedByOpponent(x: number, y: number, boardState: Piece[], team: Team): boolean{
@@ -93,107 +92,54 @@ export default class Referee {
 
         else if(type === PieceType.BISHOP){            
             for(let i = 1; i < 8; i++){
-                if(x > px && y > py){
-                    let passedPosition = {x: px+i, y: py+i}
-                    if(passedPosition.x === x && passedPosition.y === y){
-                        if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition.x, passedPosition.y, boardState, team)){
-                                return true;
-                        }
-                    } else{
-                        if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){                            
-                            break;
-                        }
+                let multiplierX = x < px ? -1 : 1;
+                let multiplierY = y < py ? -1 : 1;
+                let passedPosition = {x: px+(i * multiplierX), y: py+(i*multiplierY)}
+                if(passedPosition.x === x && passedPosition.y === y){
+                    if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition.x, passedPosition.y, boardState, team)){
+                        return true;
                     }
-                }
-                if(x > px && y < py){
-                    let passedPosition = {x: px+i, y: py-i}
-                    if(passedPosition.x === x && passedPosition.y === y){
-                        if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition.x, passedPosition.y, boardState, team)){
-                                return true;
-                        }
-                    } else{
-                        if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){                            
-                            break;
-                        }
-                    }
-                }
-                if(x < px && y < py){
-                    let passedPosition = {x: px-i, y: py-i}
-                    if(passedPosition.x === x && passedPosition.y === y){
-                        if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition.x, passedPosition.y, boardState, team)){
-                            return true;
-                        }
-                    } else{
-                        if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){                            
-                            break;
-                        }
-                    }
-                }
-                if(x < px && y > py){
-                    let passedPosition = {x: px-i, y: py+i}
-                    if(passedPosition.x === x && passedPosition.y === y){
-                        if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition.x, passedPosition.y, boardState, team)){
-                                return true;
-                        }
-                    } else{
-                        if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){                            
-                            break;
-                        }
-                    }
+                } else if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){                            
+                    break;
                 }
             }
         }
 
         else if(type === PieceType.ROOK){
-            if(x === px && y !== py){
-                for(let i=1; i<8; i++){
-                    if(y < py){
-                        let passedPosition = {x: px, y: py-i}
-                        if(passedPosition.x === x && passedPosition.y === y){
-                            if(this.tileIsEmptyOrOccupiedByOpponent(x, y, boardState, team)){
-                                return true;
-                            }
-                        }else{
-                            if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){
-                                break;
-                            } 
-                        }
+            for(let i=1; i<8; i++){
+                let multiplierX = x < px ? -1 : x > px ? 1 : 0;
+                let multiplierY = y < py ? -1 : y > py ? 1 : 0;
+                let passedPosition = {x: px+(i*multiplierX), y: py+(i*multiplierY)}
+                if(passedPosition.x === x && passedPosition.y === y){
+                    if(this.tileIsEmptyOrOccupiedByOpponent(x, y, boardState, team)){
+                        return true;
                     }
-                    else if(y > py){
-                        let passedPosition = {x: px, y: py+i}
-                        if(passedPosition.x === x && passedPosition.y === y){
-                            if(this.tileIsEmptyOrOccupiedByOpponent(x, y, boardState, team)){
-                                return true;
-                            }
-                        }else if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){
-                            break;
-                        }                         
+                }else if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){
+                    break;
+                } 
+            }
+        }
+
+        else if(type === PieceType.QUEEN){
+            for(let i=1; i<8; i++){
+                let multiplierX = x < px ? -1 : x > px ? 1 : 0;
+                let multiplierY = y < py ? -1 : y > py ? 1 : 0;
+                let passedPosition = {x: px+(i*multiplierX), y: py+(i*multiplierY)}
+                if(passedPosition.x === x && passedPosition.y === y){
+                    if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition.x, passedPosition.y, boardState, team)){
+                        return true;
                     }
+                } else if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){                            
+                    break;
                 }
             }
-            else if(x !== px && y === py){
-                for(let i=1; i<8; i++){
-                    if(x < px){
-                        let passedPosition = {x: px-i, y: py}
-                        if(passedPosition.x === x && passedPosition.y === y){
-                            if(this.tileIsEmptyOrOccupiedByOpponent(x, y, boardState, team)){
-                                return true;
-                            }
-                        }else if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){
-                            break;
-                        }                              
-                    }
-                    else if(x > px){
-                        let passedPosition = {x: px+i, y: py}
-                        if(passedPosition.x === x && passedPosition.y === y){
-                            if(this.tileIsEmptyOrOccupiedByOpponent(x, y, boardState, team)){
-                                return true;
-                            }
-                        }else if(this.tileIsOccupied(passedPosition.x, passedPosition.y, boardState)){
-                            break;
-                        }                          
-                    }
-                }            
+        }
+
+        else if(type === PieceType.KING){
+            console.log(Math.abs(x-px), Math.abs(y-py));
+            
+            if(Math.abs(x-px) <= 1 && Math.abs(y-py) <= 1 && !this.tileIsOccupiedByPlayer(x, y, boardState, team)){
+                return true;
             }
         }
     }
