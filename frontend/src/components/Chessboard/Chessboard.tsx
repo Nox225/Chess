@@ -3,6 +3,7 @@ import styles from './Chessboard.module.scss'
 import Tile from '../Tile/Tile'
 import makeid from '../../helpers/makeid'
 import Referee from '../../referee/Referee'
+import { Modal } from 'react-bootstrap'
 
 export interface Piece {
   image: string;
@@ -58,6 +59,9 @@ initialBoardSetup.push({image: 'pieces/w-k.png', x: 4, y: 0, type: PieceType.KIN
 
 const Chessboard = () => {
   const [pieces, setPieces] = useState<Piece[]>(initialBoardSetup);
+  
+  const [showPromotionModal, setShowPromotionModal] = useState<boolean>(false);
+  const [promotionPawn, setPromotionPawn] = useState<Piece>();
 
   const chessboardRef = useRef<HTMLDivElement>(null);
   let initialPos = useRef<number[]>([]);
@@ -68,6 +72,7 @@ const Chessboard = () => {
 
   const verticalAxis = ['1', '2', '3', '4', '5', '6', '7', '8'];
   const horizontalAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
   
   const grabPiece = (e: React.MouseEvent) => {
     const element = e.target as HTMLElement;
@@ -146,6 +151,13 @@ const Chessboard = () => {
               piece.enPassant = Math.abs(py-y) === 2 && piece.type === PieceType.PAWN;
               piece.x = x;
               piece.y = y;
+
+              let promotionRow = piece.team === Team.OUR ? 7 : 0;
+              if(y === promotionRow && piece.type === PieceType.PAWN){
+                setShowPromotionModal(true);
+                setPromotionPawn(piece);
+              }
+
               results.push(piece);
             } else if(!(piece.x === x && piece.y === y)){
                 if(piece.type === PieceType.PAWN){
@@ -169,6 +181,22 @@ const Chessboard = () => {
     }
   }
 
+  const pawnPromotion = (type: PieceType) =>{
+    const updatedPieces = pieces.reduce((results, piece) => {
+      if(piece.x === promotionPawn?.x && piece.y === promotionPawn?.y){        
+        piece.type = type;
+        const team = piece.team === Team.OUR ? 'w' : 'b';
+        const pieceFirstLetter = PieceType[type][0].toLocaleLowerCase() === 'k' ? 'n' : PieceType[type][0].toLocaleLowerCase();
+        piece.image = `pieces/${team}-${pieceFirstLetter}.png`        
+      }
+      results.push(piece);
+      return results;
+    }, [] as Piece[]);
+    
+    setPieces(updatedPieces);
+    setShowPromotionModal(false);
+  }
+
   for(let i=verticalAxis.length-1; i>=0; i--){
     for(let j=0; j<horizontalAxis.length; j++){
       let number = (i+j)%2;
@@ -181,18 +209,30 @@ const Chessboard = () => {
       })
       board.push(<Tile key={makeid(7)} image={image} number={number} />);
     }
-  }
+  }  
 
   return (
-    <div 
-      onMouseDown={(e)=>grabPiece(e)}
-      onMouseMove={(e)=>movePiece(e)}
-      onMouseUp={(e)=>dropPiece(e)}
-      className={styles.chessboardGrid}
-      ref={chessboardRef}
-    >
-      {board}
-    </div>
+    <>
+      <div 
+        onMouseDown={(e)=>grabPiece(e)}
+        onMouseMove={(e)=>movePiece(e)}
+        onMouseUp={(e)=>dropPiece(e)}
+        className={styles.chessboardGrid}
+        ref={chessboardRef}
+      >
+        {board}
+      </div>
+      {!!showPromotionModal ?
+        <div className={styles.modalBackdrop}>
+          <div className={styles.promotionModal}>
+            <div onClick={() => {pawnPromotion(PieceType.ROOK)}} style={{backgroundImage: `url(${promotionPawn?.team === Team.OUR ? 'pieces/w-r.png' : 'pieces/b-r.png'})`}} className={styles.pieceOption2} />
+            <div onClick={() => {pawnPromotion(PieceType.KNIGHT)}} style={{backgroundImage: `url(${promotionPawn?.team === Team.OUR ? 'pieces/w-n.png' : 'pieces/b-n.png'})`}} className={styles.pieceOption1} />
+            <div onClick={() => {pawnPromotion(PieceType.BISHOP)}} style={{backgroundImage: `url(${promotionPawn?.team === Team.OUR ? 'pieces/w-b.png' : 'pieces/b-b.png'})`}} className={styles.pieceOption2} />
+            <div onClick={() => {pawnPromotion(PieceType.QUEEN)}} style={{backgroundImage: `url(${promotionPawn?.team === Team.OUR ? 'pieces/w-q.png' : 'pieces/b-q.png'})`}} className={styles.pieceOption1} />
+          </div> 
+        </div> : <></>
+      }
+    </>
   )
 }
 

@@ -13,3 +13,57 @@
     grid-template-rows: repeat(8, 100px);
     border-radius: 12px;
 }
+
+.promotionModal{
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: size(16);
+    height: 300px;
+    width: 800px;
+    position: absolute;
+    top: calc(50% - 300px);
+    left: calc(50% - 400px);
+    display: flex;
+    // gap: 32px;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.pieceOption1{
+    image-rendering: pixelated;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 120px;
+    width: 172px;
+    height: 172px;
+    border-radius: size(32);
+    transition: 0.3s all;
+}
+
+.pieceOption2{
+    image-rendering: pixelated;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100px;
+    width: 172px;
+    height: 172px;
+    border-radius: size(32);
+    transition: 0.3s all;
+}
+
+.pieceOption1:hover{
+    cursor: pointer;
+    transform: scale(1.2);
+}
+
+.pieceOption2:hover{
+    cursor: pointer;
+    transform: scale(1.2);
+}
+
+.modalBackdrop{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
