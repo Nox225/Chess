@@ -143,4 +143,21 @@ export default class Referee {
             }
         }
     }
+
+    getValidMoves(piece: Piece, boardState: Piece[]){
+        const { x, y, type, team } = piece;
+        const possibleMoves: {x: number, y: number}[] = [];
+        const firstRow = (team === Team.OUR) ? 1 : 6;
+        if(type === PieceType.PAWN){
+            const direction = (team === Team.OUR) ? 1 : -1;
+            if(!this.tileIsOccupied(x, y+direction, boardState)){
+                possibleMoves.push({x: x, y: y+direction});
+                if(y === firstRow && !this.tileIsOccupied(x, y+2*direction, boardState)){
+                    possibleMoves.push({x: x, y: y+(2*direction)})
+                }
+                return possibleMoves
+            }
+            return possibleMoves;
+        } 
+    }
 }

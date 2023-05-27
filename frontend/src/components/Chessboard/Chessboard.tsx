@@ -3,7 +3,6 @@ import styles from './Chessboard.module.scss'
 import Tile from '../Tile/Tile'
 import makeid from '../../helpers/makeid'
 import Referee from '../../referee/Referee'
-import { Modal } from 'react-bootstrap'
 
 export interface Piece {
   image: string;
@@ -12,6 +11,7 @@ export interface Piece {
   type: PieceType;
   team: Team;
   enPassant?: boolean;
+  possibleMoves?: {x: number, y:number}[]
 }
 
 export enum PieceType {
@@ -58,7 +58,7 @@ initialBoardSetup.push({image: 'pieces/w-q.png', x: 3, y: 0, type: PieceType.QUE
 initialBoardSetup.push({image: 'pieces/w-k.png', x: 4, y: 0, type: PieceType.KING, team: Team.OUR})
 
 const Chessboard = () => {
-  const [pieces, setPieces] = useState<Piece[]>(initialBoardSetup);
+  const [pieces, setPieces] = useState<Piece[]>(initialBoardSetup);  
   
   const [showPromotionModal, setShowPromotionModal] = useState<boolean>(false);
   const [promotionPawn, setPromotionPawn] = useState<Piece>();
@@ -73,8 +73,18 @@ const Chessboard = () => {
   const verticalAxis = ['1', '2', '3', '4', '5', '6', '7', '8'];
   const horizontalAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
+  const updateValidMoves = () => {
+    setPieces((pieces) => {
+      return pieces.map(p => {
+        p.possibleMoves = referee.getValidMoves(p, pieces);
+        return p;
+      });
+    });
+  }
   
   const grabPiece = (e: React.MouseEvent) => {
+    updateValidMoves();
+
     const element = e.target as HTMLElement;
     const chessboard = chessboardRef.current;
 
@@ -207,7 +217,13 @@ const Chessboard = () => {
           image = piece.image;
         }
       })
-      board.push(<Tile key={makeid(7)} image={image} number={number} />);
+
+      let grabbedPiece = pieces.find(p => p.x === initialPos.current[0] && p.y === initialPos.current[1]);
+      // let grabbedPiece = !!activePiece ? pieces.find(p => p.x === initialPos.current[0] && p.y === initialPos.current[1]) : undefined;
+      let highlight = !!grabbedPiece?.possibleMoves ? 
+        grabbedPiece.possibleMoves.some(p => p.x === j && p.y === i) : false;
+
+      board.push(<Tile key={makeid(7)} image={image} number={number} highlight={highlight} />);
     }
   }  
 

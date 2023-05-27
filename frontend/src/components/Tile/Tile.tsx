@@ -4,11 +4,12 @@ import styles from './Tile.module.scss'
 export interface TileProps {
     image?: string;
     number: number;
+    highlight: boolean;
 }
 
-const Tile = ({image, number}: TileProps) => {
+const Tile = ({image, number, highlight}: TileProps) => {
   return (
-    <div className={`${styles.tile} ${!number ? styles.light : styles.dark}`}>
+    <div className={`${styles.tile} ${!number ? styles.light : styles.dark} ${!!highlight && styles.highlight}`}>
       {!!image &&
         <div 
           style={{backgroundImage: `url(${image})`, imageRendering: 'pixelated'}} 
