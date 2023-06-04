@@ -9,7 +9,7 @@ export interface TileProps {
 
 const Tile = ({image, number, highlight}: TileProps) => {
   return (
-    <div className={`${styles.tile} ${!number ? styles.light : styles.dark} ${!!highlight && styles.highlight}`}>
+    <div className={`${styles.tile} ${!number ? styles.light : styles.dark} ${!!highlight && !!!image ? styles.highlight : !!highlight ? styles.pieceHighlight : ''}`}>
       {!!image &&
         <div 
           style={{backgroundImage: `url(${image})`, imageRendering: 'pixelated'}} 

@@ -49,7 +49,21 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background-color: rgba(0,0,0,0.4);
+    // background-color: rgba(0,0,0,0.4);
+    background-color: rgba(193, 35, 255, 0.6);
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pieceHighlight::before{
+    content: " ";
+    width: 96px;
+    height: 96px;
+    border: 5px solid rgba(193, 35, 255, 0.6);
+    border-radius: 50%;
+    // background-color: rgba(0,0,0,0.4);
     position: absolute;
     display: flex;
     justify-content: center;

@@ -63,6 +63,8 @@ const Chessboard = () => {
   const [showPromotionModal, setShowPromotionModal] = useState<boolean>(false);
   const [promotionPawn, setPromotionPawn] = useState<Piece>();
 
+  const [showHighlight, setShowHighlight] = useState<boolean>(false);
+
   const chessboardRef = useRef<HTMLDivElement>(null);
   let initialPos = useRef<number[]>([]);
   let board = [];
@@ -81,10 +83,13 @@ const Chessboard = () => {
       });
     });
   }
+
+  const highlight = (e: React.MouseEvent) => {
+    // setShowHighlight(!show)
+    updateValidMoves();
+  }
   
   const grabPiece = (e: React.MouseEvent) => {
-    updateValidMoves();
-
     const element = e.target as HTMLElement;
     const chessboard = chessboardRef.current;
 
@@ -229,7 +234,8 @@ const Chessboard = () => {
 
   return (
     <>
-      <div 
+      <div
+        onClick={(e)=>highlight(e)}
         onMouseDown={(e)=>grabPiece(e)}
         onMouseMove={(e)=>movePiece(e)}
         onMouseUp={(e)=>dropPiece(e)}
