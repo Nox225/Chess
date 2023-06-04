@@ -81,17 +81,27 @@ const Chessboard = () => {
     updatePossibleMoves();
   }, [])
 
+  useEffect(() => {
+    // referee.checkKingMoves(pieces);
+    updatePossibleMoves();
+  }, [pieces])
+
   const updateValidMoves = () => {
     setPieces((pieces) => {
       return pieces.map(p => {
-        p.possibleMoves = referee.getValidMoves(p, pieces);
+        if(p.type === PieceType.KING){
+          p.possibleMoves = referee.checkKingMoves(pieces);
+        }
+        p.possibleMoves = referee.getValidMoves(p, pieces)
         return p;
       });
     });
+    // referee.checkKingMoves(pieces);
   }
 
   const highlight = (e: React.MouseEvent) => {
     updateValidMoves();
+    // updatePossibleMoves();
   }  
 
   const grabPiece = (e: React.MouseEvent) => {
@@ -141,6 +151,12 @@ const Chessboard = () => {
       const x = Math.floor((e.clientX - chessboard.offsetLeft) / GRIDSIZE);
       const y = Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 8*GRIDSIZE) / GRIDSIZE));
       const currentPiece = pieces.find((p) => p.x === px && p.y === py);
+      // console.log(x, y);
+      // console.log(!!currentPiece && currentPiece.type === PieceType.KING && currentPiece?.possibleMoves);
+      
+      // console.log(currentPiece?.possibleMoves?.some((move) => move.x === x && move.y === y))
+      // console.log(referee.checkKingMoves(pieces), 'fn');
+      
       
       if(!!currentPiece){
         const isValidMove = referee.isValidMove(px, py, x, y, currentPiece.type, currentPiece.team, pieces);
@@ -167,7 +183,7 @@ const Chessboard = () => {
           updateValidMoves()
           setPieces(updatedPieces);
 
-        }else if(isValidMove){
+        }else if(isValidMove && currentPiece?.possibleMoves?.some((move) => move.x === x && move.y === y)){
           const updatedPieces = pieces.reduce((results, piece) => {
             if(piece.x === px && piece.y === py){
               piece.enPassant = Math.abs(py-y) === 2 && piece.type === PieceType.PAWN;
@@ -192,7 +208,7 @@ const Chessboard = () => {
   
           updatePossibleMoves()
           updateValidMoves()
-          setPieces(updatedPieces);
+          setPieces(updatedPieces);          
 
         }else{          
           activePiece.style.position = 'relative';
@@ -241,10 +257,7 @@ const Chessboard = () => {
 
       board.push(<Tile key={makeid(7)} image={image} number={number} highlight={highlight} />);
     }
-  }  
-
-  console.log('rerender');
-  
+  }    
 
   return (
     <>

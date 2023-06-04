@@ -25,6 +25,7 @@ export default class Referee {
     }
 
     checkKingMoves(pieces: Piece[]){
+        let kingPossibleMoves: {x: number, y: number}[] = [];
         const king = pieces.find((p => p.type === PieceType.KING && p.team === Team.OPPONENT));        
         if(king?.possibleMoves === undefined) return;
 
@@ -42,8 +43,10 @@ export default class Referee {
             // king.x = move.x;
             // king.y = move.y;
             const simulatedKing = simulatedBoard.find(p => p.type === PieceType.KING && p.team === Team.OPPONENT)
-            simulatedKing!.x = move.x
-            simulatedKing!.y = move.y
+            if(!!simulatedKing){
+                simulatedKing!.x = move.x
+                simulatedKing!.y = move.y
+            }
 
             for(const enemy of simulatedBoard.filter(p => p.team === Team.OUR)){
                 enemy.possibleMoves = this.getValidMoves(enemy, simulatedBoard);
@@ -72,15 +75,15 @@ export default class Referee {
                 // console.log(move);
 
                 king.possibleMoves = king.possibleMoves.filter((m) => (m.x !== move.x || m.y !== move.y))
-                // console.log(king.possibleMoves, 'after');
-                // break
-                
+                kingPossibleMoves = king.possibleMoves.filter((m) => (m.x !== move.x || m.y !== move.y))
+                // console.log(king.possibleMoves, 'after');                
             }            
         }
 
         king.x = initialKingPos.x;
         king.y = initialKingPos.y;
         // console.log(king.possibleMoves);
+        return kingPossibleMoves
     }
 
     isEnPassantMove(
