@@ -17,6 +17,72 @@ export default class Referee {
         return !this.tileIsOccupied(x, y, boardState) || this.tileIsOccupiedByOpponent(x, y, boardState, team);
     }
 
+    calculateAllMoves(pieces: Piece[]){        
+        for(const piece of pieces){
+            piece.possibleMoves = this.getValidMoves(piece, pieces);
+        }
+        this.checkKingMoves(pieces);
+    }
+
+    checkKingMoves(pieces: Piece[]){
+        const king = pieces.find((p => p.type === PieceType.KING && p.team === Team.OPPONENT));        
+        if(king?.possibleMoves === undefined) return;
+
+        const initialKingPos = {x: king.x, y: king.y}        
+
+        for(const move of king.possibleMoves){
+            let simulatedBoard = pieces;
+
+
+            const pieceAtTarget = simulatedBoard.find(p => p.x === move.x && p.y === move.y)
+            if(!!pieceAtTarget){
+                simulatedBoard = simulatedBoard.filter(p => p.x !== move.x && p.y !== move.y)
+            }
+
+            // king.x = move.x;
+            // king.y = move.y;
+            const simulatedKing = simulatedBoard.find(p => p.type === PieceType.KING && p.team === Team.OPPONENT)
+            simulatedKing!.x = move.x
+            simulatedKing!.y = move.y
+
+            for(const enemy of simulatedBoard.filter(p => p.team === Team.OUR)){
+                enemy.possibleMoves = this.getValidMoves(enemy, simulatedBoard);
+            }
+
+            let safe = true;
+
+            for(const p of simulatedBoard){
+                if(p.team === Team.OPPONENT) continue;
+                if(p.type === PieceType.PAWN){
+                    const possiblePawnMoves = this.getValidMoves(p, simulatedBoard);
+                    if(possiblePawnMoves?.some((pos: any) => pos.x !== p.x && pos.x === move.x && pos.y === move.y)){                    
+                        safe = false;
+                        break;
+                    }
+                }
+                // console.log(p.type, p.possibleMoves);
+                else if(p.possibleMoves?.some((pos: any) => pos.x === move.x && pos.y === move.y)){                    
+                    safe = false;
+                    break;
+                }
+            }
+            if(!safe){    
+                // console.log('not safe');         
+                // console.log(king.possibleMoves, 'before');
+                // console.log(move);
+
+                king.possibleMoves = king.possibleMoves.filter((m) => (m.x !== move.x || m.y !== move.y))
+                // console.log(king.possibleMoves, 'after');
+                // break
+                
+            }            
+        }
+
+        king.x = initialKingPos.x;
+        king.y = initialKingPos.y;
+        // console.log(king.possibleMoves);
+    }
+
     isEnPassantMove(
         px: number, 
         py: number, 
@@ -488,6 +554,6 @@ export default class Referee {
             }
         }
 
-        return possibleMoves;
+        return possibleMoves.filter((move) => move.x >=0 && move.x <= 7 && move.y >= 0 && move.y <= 7);
     }
 }

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styles from './Chessboard.module.scss'
 import Tile from '../Tile/Tile'
 import makeid from '../../helpers/makeid'
@@ -63,8 +63,6 @@ const Chessboard = () => {
   const [showPromotionModal, setShowPromotionModal] = useState<boolean>(false);
   const [promotionPawn, setPromotionPawn] = useState<Piece>();
 
-  const [showHighlight, setShowHighlight] = useState<boolean>(false);
-
   const chessboardRef = useRef<HTMLDivElement>(null);
   let initialPos = useRef<number[]>([]);
   let board = [];
@@ -74,6 +72,14 @@ const Chessboard = () => {
 
   const verticalAxis = ['1', '2', '3', '4', '5', '6', '7', '8'];
   const horizontalAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+  const updatePossibleMoves = () => {
+    referee.calculateAllMoves(pieces);
+  }
+
+  useEffect(() => {
+    updatePossibleMoves();
+  }, [])
 
   const updateValidMoves = () => {
     setPieces((pieces) => {
@@ -85,10 +91,9 @@ const Chessboard = () => {
   }
 
   const highlight = (e: React.MouseEvent) => {
-    // setShowHighlight(!show)
     updateValidMoves();
-  }
-  
+  }  
+
   const grabPiece = (e: React.MouseEvent) => {
     const element = e.target as HTMLElement;
     const chessboard = chessboardRef.current;
@@ -158,6 +163,8 @@ const Chessboard = () => {
             return results;
           }, [] as Piece[]);
 
+          updatePossibleMoves()
+          updateValidMoves()
           setPieces(updatedPieces);
 
         }else if(isValidMove){
@@ -183,7 +190,9 @@ const Chessboard = () => {
             return results;
           }, [] as Piece[]);
   
-            setPieces(updatedPieces);
+          updatePossibleMoves()
+          updateValidMoves()
+          setPieces(updatedPieces);
 
         }else{          
           activePiece.style.position = 'relative';
@@ -208,6 +217,8 @@ const Chessboard = () => {
       return results;
     }, [] as Piece[]);
     
+    updatePossibleMoves()
+    updateValidMoves();
     setPieces(updatedPieces);
     setShowPromotionModal(false);
   }
@@ -231,6 +242,9 @@ const Chessboard = () => {
       board.push(<Tile key={makeid(7)} image={image} number={number} highlight={highlight} />);
     }
   }  
+
+  console.log('rerender');
+  
 
   return (
     <>
